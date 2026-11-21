@@ -114,6 +114,24 @@ h1 .game.shimmer{filter:drop-shadow(0 0 28px rgba(212,175,55,.28))}
 @keyframes ruleGrow{to{width:84px}}
 .subline{font-size:clamp(12px,1.3vw,15px);letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:750}
 
+/* ---------- COUNTDOWN ---------- */
+.countdown{margin:30px auto 0;display:flex;flex-direction:column;align-items:center;gap:16px}
+.cd-label{display:inline-flex;align-items:center;gap:12px;font-size:11px;font-weight:750;letter-spacing:.26em;text-transform:uppercase;color:var(--muted)}
+.cd-label b{color:var(--bone);font-weight:800}
+.cd-units{display:flex;align-items:center;justify-content:center;gap:10px}
+.cd-units i{font-style:normal;color:var(--gold);font-size:clamp(26px,3.4vw,40px);font-weight:300;line-height:1;opacity:.85}
+.cd-unit{--cut:16px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:clamp(84px,9vw,112px);height:clamp(84px,9vw,104px);isolation:isolate;
+  clip-path:polygon(var(--cut) 0,100% 0,calc(100% - var(--cut)) 100%,0 100%)}
+.cd-unit:before,.cd-unit:after{content:"";position:absolute;z-index:-1;clip-path:inherit}
+.cd-unit:before{inset:0;background:linear-gradient(135deg,rgba(240,213,119,.7),rgba(212,175,55,.35) 45%,rgba(138,107,36,.5))}
+.cd-unit:after{inset:1px;background:linear-gradient(180deg,rgba(24,22,17,.96),rgba(11,11,11,.96))}
+.cd-num{font-size:clamp(32px,4vw,50px);font-weight:900;letter-spacing:-.05em;line-height:1;color:var(--bone);
+  font-variant-numeric:tabular-nums;padding-right:.04em}
+.cd-unit:first-child .cd-num{color:var(--gold);text-shadow:0 0 22px rgba(212,175,55,.45)}
+.cd-cap{margin-top:8px;font-size:9px;font-weight:800;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+.countdown.is-live .cd-units{display:none}
+
 .links{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:22px;margin-top:30px}
 .btn-wrap{display:block;transition:transform .35s var(--ease),filter .3s;filter:drop-shadow(0 0 0 rgba(212,175,55,0))}
 .btn-wrap.is-primary{animation:btnGlow 2.6s ease-in-out infinite}
@@ -180,6 +198,13 @@ footer a:hover{color:var(--gold)}
   .links{flex-direction:column;gap:16px}
   .btn-wrap{width:min(330px,100%)}
   .btn{--cut:18px;width:100%;min-width:0;height:60px;padding:0 28px;font-size:12px}
+  .countdown{margin-top:26px;gap:14px}
+  .cd-label{font-size:10px;letter-spacing:.2em}
+  .cd-units{gap:4px}
+  .cd-units i{font-size:22px}
+  .cd-unit{--cut:10px;width:calc((100vw - 36px - 42px) / 4);max-width:84px;height:74px}
+  .cd-num{font-size:30px}
+  .cd-cap{font-size:8px;letter-spacing:.16em;margin-top:6px}
   .eyebrow{font-size:10px;letter-spacing:.18em;padding:8px 14px;margin-bottom:22px}
   .bg-rings{right:-430px}
   .bg-slash.s1{right:12%}
@@ -228,7 +253,19 @@ footer a:hover{color:var(--gold)}
     <p class="description rise" style="--d:1.95s">News. Interviews. Stories. We're building an independent esports media platform focused on the people, competition and culture shaping the scene.</p>
     <div class="rule"></div>
     <div class="subline rise" style="--d:2.3s">The next chapter starts here.</div>
-    <div class="links rise" style="--d:2.5s">
+    <div class="countdown rise" style="--d:2.4s" id="countdown" role="timer" aria-live="off">
+      <div class="cd-label"><span class="live-dot"></span><span>Launching <b>04.01.2027</b></span></div>
+      <div class="cd-units">
+        <div class="cd-unit"><span class="cd-num" data-u="d">--</span><span class="cd-cap">Days</span></div>
+        <i aria-hidden="true">/</i>
+        <div class="cd-unit"><span class="cd-num" data-u="h">--</span><span class="cd-cap">Hours</span></div>
+        <i aria-hidden="true">/</i>
+        <div class="cd-unit"><span class="cd-num" data-u="m">--</span><span class="cd-cap">Minutes</span></div>
+        <i aria-hidden="true">/</i>
+        <div class="cd-unit"><span class="cd-num" data-u="s">--</span><span class="cd-cap">Seconds</span></div>
+      </div>
+    </div>
+    <div class="links rise" style="--d:2.55s">
       <span class="btn-wrap is-primary"><a class="btn primary" href="https://x.com/mkeggcom" target="_blank" rel="noopener">
         <span class="shine"></span>
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.847h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.153h7.594l5.243 6.932 6.064-6.932Zm-1.291 19.49h2.039L6.486 3.24H4.298L17.61 20.643Z"/></svg>
@@ -277,6 +314,29 @@ footer a:hover{color:var(--gold)}
       });
       w.addEventListener('pointerleave',function(){w.style.transform=''});
     });
+  }
+
+  /* Launch countdown: Monday 4 January 2027, 00:00 Budapest time (CET, UTC+1) */
+  var cd=document.getElementById('countdown');
+  if(cd){
+    var target=Date.UTC(2027,0,3,23,0,0);
+    var els={};cd.querySelectorAll('[data-u]').forEach(function(n){els[n.getAttribute('data-u')]=n});
+    var pad=function(n){return n<10?'0'+n:''+n};
+    var tick=function(){
+      var ms=target-Date.now();
+      if(ms<=0){
+        cd.classList.add('is-live');
+        cd.querySelector('.cd-label span:last-child').innerHTML='M/KE is <b>live</b>';
+        return;
+      }
+      var s=Math.floor(ms/1000);
+      els.d.textContent=pad(Math.floor(s/86400));
+      els.h.textContent=pad(Math.floor(s%86400/3600));
+      els.m.textContent=pad(Math.floor(s%3600/60));
+      els.s.textContent=pad(s%60);
+      setTimeout(tick,1000-(Date.now()%1000));
+    };
+    tick();
   }
 
   /* Rising gold embers */
