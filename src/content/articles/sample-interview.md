@@ -4,7 +4,7 @@ standfirst: "[Sample article. One line on who they are and why they're worth hea
 kind: Interview
 label: Confirmed
 league: LEC
-author: David
+author: Damilosk
 date: 2026-11-21T18:00:00+01:00
 readTime: 8
 draft: true
